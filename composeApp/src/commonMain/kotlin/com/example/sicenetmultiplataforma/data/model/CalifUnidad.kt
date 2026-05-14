@@ -29,7 +29,6 @@ data class CalifUnidad(
 
         fun fromJsonList(jsonString: String): List<CalifUnidad> {
             return try {
-                // Decodificamos como una lista de elementos JSON genéricos para no perder datos
                 val rawList = jsonConfig.decodeFromString<List<kotlinx.serialization.json.JsonObject>>(jsonString)
 
                 rawList.map { jsonObject ->

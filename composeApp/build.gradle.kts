@@ -67,6 +67,9 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
+
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation("io.ktor:ktor-client-core:2.3.11")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
