@@ -1,4 +1,4 @@
-package com.example.sicenet.data.local
+package com.example.sicenetmultiplataforma.data.local
 
 import androidx.room.*
 import com.example.sicenetmultiplataforma.data.model.Kardex
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface KardexDao {
-    @Query("SELECT * FROM kardex")
+    @Query("SELECT * FROM kardex ORDER BY id ASC")
     fun getAllKardex(): Flow<List<Kardex>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -3,48 +3,52 @@ package com.example.sicenetmultiplataforma.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.*
 
+// Tabla local para almacenar el historial de materias acreditadas en semestres anteriores.
 @Serializable
 @Entity(tableName = "kardex")
 data class Kardex(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val clave: String = "",
     val materia: String = "",
-    val calificacion: Int = 0,
+    val calificacion: String = "",
     val periodo: String = "",
-    val acreditacion: String = "",
     val lastUpdate: Long = 0L
+)
+
+// Modelo temporal para parsear las propiedades estructuradas del Kardex de la escuela.
+@Serializable
+data class KardexRaw(
+    @SerialName("Clave") val clave: String = "",
+    @SerialName("Materia") val materia: String = "",
+    @SerialName("Calificacion") val calificacion: String = "",
+    @SerialName("Periodo") val periodo: String = ""
 ) {
-    @Serializable
-    private data class KardexResponse(val lstKardex: List<KardexRaw>)
-
-    @Serializable
-    private data class KardexRaw(
-        val ClvOfiMat: String = "",
-        val Materia: String = "",
-        val Calif: Int = 0,
-        val P1: String = "",
-        val A1: String = "",
-        val Acred: String = ""
-    )
-
     companion object {
-        private val jsonConfig = Json { ignoreUnknownKeys = true }
+        private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
 
+        // Transforma la respuesta de red en la lista inmutable que consume la interfaz gráfica.
         fun fromJsonList(jsonString: String): List<Kardex> {
+            if (jsonString.isBlank() || jsonString == "[]") return emptyList()
             return try {
-                val response = jsonConfig.decodeFromString<KardexResponse>(jsonString)
-                response.lstKardex.map { raw ->
-                    Kardex(
-                        clave = raw.ClvOfiMat,
-                        materia = raw.Materia,
-                        calificacion = raw.Calif,
-                        periodo = if (raw.P1.isNotBlank()) "${raw.P1} ${raw.A1}" else "Desconocido",
-                        acreditacion = raw.Acred,
-                        lastUpdate = 0L // En KMP evita System.currentTimeMillis() en el modelo común
-                    )
+                val element = json.parseToJsonElement(jsonString)
+                val jsonArray = when (element) {
+                    is JsonArray -> element
+                    is JsonObject -> element.values.firstOrNull() as? JsonArray
+                    else -> null
                 }
+
+                jsonArray?.map { item ->
+                    val raw = json.decodeFromJsonElement<KardexRaw>(item)
+                    Kardex(
+                        clave = raw.clave,
+                        materia = raw.materia,
+                        calificacion = raw.calificacion,
+                        periodo = raw.periodo
+                    )
+                } ?: emptyList()
             } catch (e: Exception) {
                 emptyList()
             }

@@ -1,4 +1,4 @@
-package com.example.sicenet.data.local
+package com.example.sicenetmultiplataforma.data.local
 
 import androidx.room.*
 import com.example.sicenetmultiplataforma.data.model.Materia
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MateriaDao {
-    @Query("SELECT * FROM materias")
+    @Query("SELECT * FROM materias ORDER BY id ASC")
     fun getAllMaterias(): Flow<List<Materia>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

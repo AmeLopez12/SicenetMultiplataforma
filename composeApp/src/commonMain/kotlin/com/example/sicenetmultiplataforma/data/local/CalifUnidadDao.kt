@@ -1,4 +1,4 @@
-package com.example.sicenet.data.local
+package com.example.sicenetmultiplataforma.data.local
 
 import androidx.room.*
 import com.example.sicenetmultiplataforma.data.model.CalifUnidad
